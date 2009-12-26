@@ -1,0 +1,34 @@
+#!C:\Program Files\ActiveState Perl Dev Kit 8.1\bin\perlapp-gui.exe
+PAP-Version: 1.0
+Packer: C:\Program Files\ActiveState Perl Dev Kit 8.1\bin\perlapp.exe
+Script: palm-strip-export.pl
+Cwd: C:\code\palm-strip-export
+Clean: 0
+Date: 2009-12-26 04:10:30
+Debug: 
+Dependent: 0
+Dyndll: 0
+Exe: palm-strip-export.exe
+Force: 0
+Gui: 0
+Hostname: stephen-68a810d
+Lib: lib:..\Palm-Zetetic-Strip\lib
+Manifest: 
+No-Compress: 0
+No-Logo: 0
+Runlib: 
+Shared: none
+Tmpdir: 
+Verbose: 0
+Version-Comments: 
+Version-CompanyName: Zetetic LLC
+Version-FileDescription: 
+Version-FileVersion: 1.0
+Version-InternalName: palm-strip-export
+Version-LegalCopyright: Zetetic LLC 2009
+Version-LegalTrademarks: 
+Version-OriginalFilename: palm-strip-export
+Version-ProductName: Palm Strip Export
+Version-ProductVersion: 1.0
+Warnings: 0
+Xclude: 0
