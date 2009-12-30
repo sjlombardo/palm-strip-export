@@ -4,13 +4,13 @@ Packer: C:\Program Files\ActiveState Perl Dev Kit 8.1\bin\perlapp.exe
 Script: palm-strip-export.pl
 Cwd: C:\code\palm-strip-export
 Clean: 0
-Date: 2009-12-26 04:10:30
+Date: 2009-12-30 15:56:54
 Debug: 
 Dependent: 0
 Dyndll: 0
 Exe: palm-strip-export.exe
-Force: 0
-Gui: 0
+Force: 1
+Gui: 1
 Hostname: stephen-68a810d
 Lib: lib:..\Palm-Zetetic-Strip\lib
 Manifest: 
