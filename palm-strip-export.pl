@@ -9,8 +9,7 @@ use Getopt::Long;
 use POSIX qw(tmpnam);
 use Term::ReadKey;
 use Palm::Zetetic::Strip;
-use Tk;
-use Tk::LabFrame;
+use Tkx;
 
 ## The next 3 lines are a hack to support PerlApp
 ## It it needs to know all direct dependencies
@@ -19,62 +18,45 @@ use Palm::Zetetic::Strip::PDB::PasswordV10;
 use Palm::Zetetic::Strip::PDB::SystemsV10;
 use Palm::Zetetic::Strip::PDB::AccountsV10;
 
-use vars qw($VERSION $file
-            $PROGRAM $opt_help $opt_directory $opt_file $opt_password
-	    $mainwindow $source_dialog $target_dialog
-    	);
+use vars qw($opt_directory $opt_file $opt_password $strip $version $file);
 
-$VERSION = "1.0.4";
-$PROGRAM = basename($0);
+my $IS_AQUA = Tkx::tk_windowingsystem() eq "aqua";
 
-my $strip;
-my $version;
-my $rc;
+my $mw = Tkx::widget->new(".");
+$mw->g_wm_title("Palm Strip Export");
 
-$mainwindow = MainWindow->new(-title => "Palm Strip Export");
-my $frame = $mainwindow->LabFrame(-label => "Configuration",
-                                   -labelside => "acrosstop")->pack(-anchor=>'center', -padx => 20, -pady => 20);
+my $frame = $mw->new_frame();
+$frame->g_pack(-anchor=>'center', -padx => 20, -pady => 20);
 
-my $r0c0 = $frame->Frame->grid(-row => 0, -column => 0, -sticky => 'nw', -padx => 10, -pady => 5);
-my $r0c1 = $frame->Frame->grid(-row => 0, -column => 1, -sticky => 'nw', -padx => 10, -pady => 5);
-my $r1c0 = $frame->Frame->grid(-row => 1, -column => 0, -sticky => 'nw', -padx => 10, -pady => 5);
-my $r1c1 = $frame->Frame->grid(-row => 1, -column => 1, -sticky => 'nw', -padx => 10, -pady => 5);
-my $r2c0 = $frame->Frame->grid(-row => 2, -column => 0, -sticky => 'nw', -padx => 10, -pady => 5);
-my $r2c1 = $frame->Frame->grid(-row => 2, -column => 1, -sticky => 'nw', -padx => 10, -pady => 5);
-my $r3 = $frame->Frame->grid(-row => 3, -column => 0, -columnspan => 2, -padx => 10, -pady => 5);
+my $password_label = $frame->new_ttk__label(-text => "Password");
+$password_label->g_grid(-row => 0, -column => 0, -sticky => 'nw', -padx => 10, -pady => 5);
 
-  
+my $password_entry = $frame->new_ttk__entry(-width => 20, -textvariable => \$opt_password);
+$password_entry->g_grid(-row => 0, -column => 1, -sticky => 'nw', -padx => 10, -pady => 5);
 
-$r0c0->Label(-text => "Password")->pack(-side=>"top", -anchor => "ne");
-$r0c1->Entry(-width => 20, -textvariable => \$opt_password)->pack(-side => "top", -anchor => "ne"); 
+my $directory_button = $frame->new_ttk__button(-text => 'Choose Directory',  -command => \&getDirectory);
+$directory_button->g_grid(-row => 1, -column => 0, -sticky => 'nw', -padx => 10, -pady => 5);
 
-$r1c0->Button(
-  -text => 'Choose Directory',
-  -command => \&getDirectory
-)->pack(-side => "top", -anchor => "ne"); 
-$r1c1->Entry(-width => 60, -textvariable => \$opt_directory)->pack(-side => "top", -anchor => "ne"); 
+my $directory_entry = $frame->new_ttk__entry(-width => 60, -textvariable => \$opt_directory);
+$directory_entry->g_grid(-row => 1, -column => 1, -sticky => 'nw', -padx => 10, -pady => 5);
 
-$r2c0->Button(
-  -text => 'Save As',
-  -command => \&getTarget
-)->pack(-side => "top", -anchor => "ne"); 
-$r2c1->Entry(-width => 60, -textvariable => \$opt_file)->pack(-side => "top", -anchor => "ne"); 
+my $file_button = $frame->new_ttk__button(-text => 'Save As',  -command => \&getTarget);
+$file_button->g_grid(-row => 2, -column => 0, -sticky => 'nw', -padx => 10, -pady => 5);
 
-$r3->Button(
-  -text => 'Export To File',
-  -command => \&export
-)->pack(-side => "top", -anchor => "center"); 
+my $file_entry = $frame->new_ttk__entry(-width => 60, -textvariable => \$opt_file);
+$file_entry->g_grid(-row => 2, -column => 1, -sticky => 'nw', -padx => 10, -pady => 5);
 
-MainLoop();
+my $export_button = $frame->new_ttk__button(-text => 'Export To File',  -command => \&export);
+$export_button->g_grid(-row => 3, -column => 1, -sticky => 'nw', -padx => 10, -pady => 5);
+ 
+Tkx::MainLoop();
 
 sub getDirectory {
-  $opt_directory = $mainwindow ->chooseDirectory();
+  $opt_directory = Tkx::tk___chooseDirectory()
 }
 
 sub getTarget {
-  $opt_file = $mainwindow->getSaveFile(
-    -initialfile => 'strip.csv',
-    -defaultextension => '.csv');
+  $opt_file = Tkx::tk___getSaveFile(-initialfile => 'strip.csv', -defaultextension => '.csv');
 }
 
 sub validate {
@@ -89,7 +71,7 @@ sub validate {
     $message .= "Choose the file to save entries to\n"; 
   }
   if($message) {
-    $mainwindow->messageBox(-message => "$message\n", -type => "ok");
+    Tkx::tk___messageBox(-message => "$message\n", -type => "ok");
     return 0;
   }
   return 1;
@@ -104,24 +86,24 @@ sub export {
       $strip->set_directory($opt_directory);
       $version = $strip->get_strip_version();
     }; if ($@) {
-        $mainwindow->messageBox(-message => "Unable to find a Strip database in that location\n", -type => "ok");
+        Tkx::tk___messageBox(-message => "Unable to find a Strip database in that location\n", -type => "ok");
 	return;
     }
     if (! $version->is_1_0())
     {
-        $mainwindow->messageBox(-message => "Unable to open database. Please upgrade your database to strip 2.0 before running\n", -type => "ok");
+        Tkx::tk___messageBox(-message => "Unable to open database. Please upgrade your database to strip 2.0 before running\n", -type => "ok");
 	return;
     }
     
     if (! $strip->set_password($opt_password))
     {
-        $mainwindow->messageBox(-message => "You entered a bad password\n", -type => "ok");
+        Tkx::tk___messageBox(-message => "You entered a bad password\n", -type => "ok");
 	return;
     }
     $strip->load();
 
     unless(open($file, "> $opt_file")) {
-      $mainwindow->messageBox(-message => "Unable to open output file\n", -type => "ok");
+      Tkx::tk___messageBox(-message => "Unable to open output file\n", -type => "ok");
       return;
     }     
 
@@ -147,6 +129,6 @@ sub export {
     }
     
     $file->close();
-    $mainwindow->messageBox(-message => "Conversion complete!\n", -type => "ok");
+    Tkx::tk___messageBox(-message => "Conversion complete!\n", -type => "ok");
   }
 }
